@@ -32,6 +32,7 @@
                 figlet
                 lolcat
 
+                hplip
                 pdfsandwich
                 pdftk
               ];
