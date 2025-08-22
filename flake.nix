@@ -3,11 +3,10 @@
 
   inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
-  outputs = { self, nixpkgs }:
+  outputs =
+    { self, nixpkgs }:
     let
       name = "ScanFolder";
-
-      hinclient = import ./default.nix;
 
       # System types to support.
       supportedSystems = [ "x86_64-linux" ];
@@ -19,28 +18,30 @@
       nixpkgsFor = forAllSystems (system: import nixpkgs { inherit system; });
     in
     {
-      devShells = forAllSystems (system:
-          let
-            pkgs = nixpkgsFor.${system};
-          in
-          {
-            default = pkgs.mkShell {
-              inherit name;
+      devShells = forAllSystems (
+        system:
+        let
+          pkgs = nixpkgsFor.${system};
+        in
+        {
+          default = pkgs.mkShell {
+            inherit name;
 
-              buildInputs = with pkgs; [
-                # banner printing on enter
-                figlet
-                lolcat
+            buildInputs = with pkgs; [
+              # banner printing on enter
+              figlet
+              lolcat
 
-                hplip
-                pdfsandwich
-                pdftk
-              ];
+              hplip
+              pdfsandwich
+              poppler-utils
+            ];
 
-              shellHook = ''
-                figlet ${name} | lolcat --freq 0.5
-              '';
-            };
-          });
+            shellHook = ''
+              figlet ${name} | lolcat --freq 0.5
+            '';
+          };
+        }
+      );
     };
 }
