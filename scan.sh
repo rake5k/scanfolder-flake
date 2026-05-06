@@ -64,11 +64,23 @@ _read_boolean() {
         _read_boolean "${@}"
     fi
 }
-
 while _read_boolean "Scan another page?" Y
 do
   TMP_FILE="${DIR}/hpscan_${DATE}T${TIME}_tmp.pdf"
-  hp-scan -d 'hpaio:/net/Officejet_Pro_8600?hostname=pr-hp-chr.lan.harke.ch' -f "${TMP_FILE}" --size='a4' ${@}
+  SIZE=""
+  ARGS=()
+  for arg in "$@"; do
+    case "$arg" in
+      --size=*) SIZE="${arg#--size=}";;
+      --*) ARGS+=("$arg");;
+      *) ARGS+=("$arg");;
+    esac
+  done
+  if [[ -n "${SIZE}" ]]; then
+    hp-scan -d 'hpaio:/net/Officejet_Pro_8600?hostname=pr-hp-chr.lan.harke.ch' -f "${TMP_FILE}" --size="${SIZE}" "${ARGS[@]}"
+  else
+    hp-scan -d 'hpaio:/net/Officejet_Pro_8600?hostname=pr-hp-chr.lan.harke.ch' -f "${TMP_FILE}" --size='a4' "${ARGS[@]}"
+  fi
 
   if [[ -f "${FILE}" ]]; then
     INPUT_FILE="${DIR}/hpscan_${DATE}T${TIME}_input.pdf"
